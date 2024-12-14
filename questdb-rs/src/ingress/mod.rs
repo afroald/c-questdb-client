@@ -1064,6 +1064,17 @@ impl Buffer {
         Ok(self)
     }
 
+    pub fn column_long256<'a, N>(&mut self, name: N, value: [u8; 32]) -> Result<&mut Self>
+    where
+        N: TryInto<ColumnName<'a>>,
+        Error: From<N::Error>,
+    {
+        self.write_column_key(name)?;
+        let ser = format!("0x{}i", hex::encode(value));
+        self.output.push_str(ser.as_str());
+        Ok(self)
+    }
+
     /// Complete the current row with the designated timestamp. After this call, you can
     /// start recording the next row by calling [Buffer::table] again, or  you can send
     /// the accumulated batch by calling [Sender::flush] or one of its variants.
